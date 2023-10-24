@@ -1,0 +1,296 @@
+---
+title: "Gráficos III"
+author: Rafael N. Magalhães
+date: "`r format(Sys.time(), '%d-%m-%Y')`"
+output: 
+  revealjs::revealjs_presentation:
+    theme: simple
+    highlight: tango
+    transition: slide
+    center: true
+    css: stylesheet.css
+    reveal_options:
+      controls: false  # Desativar botões de navegação no slide
+      mouseWheel: true # Passar slides com o mouse
+  beamer_presentation:
+    highlight: tango
+    keep_tex: false # Mudar se quiser ter o arquivo .tex
+    toc: true # Seções definidas como nível 1
+    incremental: false # Sem bullets incrementais. Para ativar específ., usar >-
+    slide_level: 2 # Slides definidos como nível 2
+---
+
+
+## Minard: A Campanha Russa de Napoleão
+
+<center>
+![Minard](images/minard.png)
+[Link em alta resolução](https://upload.wikimedia.org/wikipedia/commons/2/29/Minard.png)
+</center>
+
+## Carregando os pacotes para a aula
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, results='hide'}
+# pacotes necessários
+# install.packages(c("ggrepel", "gridExtra", "lubridate", "rgdal", "maptools", "ggmap", "mapproj", "sf", "rio", "maps", "readxl", "here", "tidyverse", "devtools"))
+library(ggrepel)
+library(gridExtra)
+library(lubridate)
+
+library(mapproj)
+library(sf)
+library(rio)
+
+library(stringr)
+library(maps)
+
+library(readxl)
+library(tidyverse)
+library(here)
+
+# configuracao para desabilitar notacao cientifica
+options(scipen = 999) 
+
+```
+
+
+## "O melhor gráfico estatístico da história"
+O gráfico representa, de maneira concisa, clara e elegante, 6 informações diferentes: 
+número de soldados, distância, temperatura, localização precisa de rios e cidades, 
+direção de ataque e de recuo, e localização relativa às datas.
+
+Mas será que conseguimos reproduzi-lo no R? ([código original](https://github.com/andrewheiss/fancy-minard) e [dados](http://www.datavis.ca/gallery/re-minard.php))
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+
+# carregar os dados
+troops <- read_table2(here("Aula 7/troops.txt"))
+cities <- read_table2(here("Aula 7/cities.txt"))
+temps <- read_table2(here("Aula 7/temps.txt"))
+
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
+
+# carregar os dados
+troops <- read_table2(here("troops.txt"))
+cities <- read_table2(here("cities.txt"))
+temps <- read_table2(here("temps.txt"))
+
+```
+
+## Primeiros passos - mapeando as tropas
+```{r fig.height = 5, fig.align="center"}
+troops %>% ggplot() +
+  geom_path(aes(x = long, y = lat, group = group))
+```
+
+## Direção e sobreviventes
+```{r fig.height = 5, fig.align="center"}
+troops %>% ggplot() +
+  geom_path(aes(x = long, y = lat, group = group, color = direction, linewidth = survivors))
+```
+
+## Ajustes estéticos
+```{r fig.height = 4, fig.align="center"}
+troops %>% ggplot() +
+  geom_path(aes(x = long, y = lat, group = group, color = direction, linewidth = survivors),
+            lineend = "round") + # linhas arredondadas para melhor efeito
+  scale_size(range = c(0.5, 15)) # desagrega o número de categorias na escala
+```
+
+## Reproduzindo as cores do gráfico original
+```{r warning=FALSE, fig.height = 3, fig.align="center"}
+troops %>% ggplot() +
+  geom_path(aes(x = long, y = lat, group = group, color = direction, size = survivors),
+            lineend = "round") + # linhas arredondadas para melhor efeito
+  scale_size(range = c(0.5, 15)) + # desagrega o número de categorias na escala
+  scale_colour_manual(values = c("#e6ccac", "#252523")) + # cores originais
+  labs(x = NULL, y = NULL) + # tira os rótulos dos eixos
+  guides(color = FALSE, size = FALSE) # tira os tiques dos eixos
+```
+
+## Adicionando as cidades (gráfico no próximo slide)
+```{r fig.height = 3.5, fig.align="center", fig.show="hide"}
+# Agora estamos chamando os dados dentro de cada geom. Por quê?
+ggplot() +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, color = direction, size = survivors), lineend = "round") +
+  geom_point(data = cities, aes(x = long, y = lat), color = "#DC5B44") +  # loc. das cidades
+  geom_text_repel(data = cities, aes(x = long, y = lat, label = city), # nomes das cidades
+                  color = "red", size = 3, fontface = "bold") + 
+  scale_size(range = c(0.5, 15)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE, size = FALSE) +
+  theme_void() # tira todos os elementos do gráfico
+```
+
+## Finalizando a parte de cima!
+```{r echo=FALSE, fig.align="center", fig.height=5}
+grafico_marcha <- ggplot() +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, color = direction, size = survivors), lineend = "round") +
+  geom_point(data = cities, aes(x = long, y = lat), color = "#DC5B44") +  # loc. das cidades
+  geom_text_repel(data = cities, aes(x = long, y = lat, label = city), # nomes das cidades
+                  color = "red", size = 3, fontface = "bold") + 
+  scale_size(range = c(0.5, 15)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE, size = FALSE) +
+  theme_void() # tira todos os elementos do gráfico
+
+grafico_marcha
+```
+
+## O gráfico de temperaturas
+```{r fig.height = 5, fig.align="center"}
+temps %>% ggplot(aes(x = long, y = temp)) +
+    geom_line() +
+    geom_text(aes(label = temp), vjust = 1.5)
+```
+
+## Limpando o layout e Finalizando a parte de baixo!
+```{r fig.show="hide", message=FALSE, warning=FALSE}
+# Melhorando a apresentação dos dados
+temps_celsius <- temps %>%
+  mutate(nice.label = paste0(temp, "°, ", month, ". ", day))
+
+grafico_temperaturas <- ggplot(data = temps_celsius, aes(x = long, y = temp)) +
+  geom_line() + # linha
+  geom_label(aes(label = nice.label), size = 2.5) + # rótulos
+  labs(x = NULL, y = "° Celsius") + # escalas
+  scale_x_continuous(limits = c(23.5, 38.1)) + # coincidir escala com o gráfico da marcha
+  scale_y_continuous(position = "right") + # eixo y na direita
+  coord_cartesian(ylim = c(-35, 5)) +  # espaçamento
+  theme_bw() + # ajustes no tema
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks = element_blank(),
+        panel.border = element_blank())
+
+grafico_temperaturas
+```
+
+## Limpando o layout e Finalizando a parte de baixo!
+```{r echo=FALSE, fig.align="center", fig.height=5, message=FALSE, warning=FALSE}
+
+# API no Stadua, aproveitando que esse código não é exibido
+API_Stadia <- "4f3c76d7-21da-4d3b-9dcd-0df0122e94b6"
+
+# Melhorando a apresentação dos dados
+temps_celsius <- temps %>%
+  mutate(nice.label = paste0(temp, "°, ", month, ". ", day))
+
+grafico_temperaturas <- ggplot(data = temps_celsius, aes(x = long, y = temp)) +
+  geom_line() + # linha
+  geom_label(aes(label = nice.label), size = 2.5) + # rótulos
+  labs(x = NULL, y = "° Celsius") + # escalas
+  scale_x_continuous(limits = c(23.5, 38.1)) + # coincidir escala com o gráfico da marcha
+  scale_y_continuous(position = "right") + # eixo y na direita
+  coord_cartesian(ylim = c(-35, 5)) +  # espaçamento
+  theme_bw() + # ajustes no tema
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks = element_blank(),
+        panel.border = element_blank())
+
+grafico_temperaturas
+```
+
+## Incluindo dados geográficos
+Uma das qualidades do gráfico do Minard é a precisão geográfica. Para conseguir aplicar esses dados em um mapa, é necessário criar uma chave API no Stadia. É fácil e grátis! Você encontra as instruções [neste link](https://docs.stadiamaps.com/authentication/#api-keys)
+
+```{r fig.show="hide", message=FALSE, warning=FALSE}
+# install.packages("devtools")
+# devtools::install_github("stadiamaps/ggmap")
+
+library(ggmap)
+register_stadiamaps(API_Stadia)
+
+recorte_europa <- c(left = -13.10, bottom = 35.75, right = 41.04, top = 61.86) 
+europa <- get_stadiamap(bbox = recorte_europa, zoom = 5, maptype = "stamen_toner_lite", where = "cache")
+
+europa %>% ggmap() +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, color = direction, size = survivors),
+            lineend = "round") +
+  scale_size(range = c(0.5, 5)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  guides(color = FALSE, size = FALSE) +  theme_nothing()
+```
+
+## A invasão no contexto europeu
+```{r echo=FALSE, fig.align='center', message=FALSE, warning=FALSE}
+europa %>% ggmap() +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, 
+                               color = direction, size = survivors),
+            lineend = "round") +
+  scale_size(range = c(0.5, 5)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  guides(color = FALSE, size = FALSE) +
+  theme_nothing()
+```
+
+## Zoom: Mapa da campanha russa
+```{r fig.show="hide", message=FALSE, warning=FALSE}
+recorte_minard <- c(left = 23.5, bottom = 53.4, right = 38.1, top = 56.3)
+area_minard <- get_stadiamap(bbox = recorte_minard, zoom = 8, maptype = "stamen_toner_lite", where = "cache")
+
+mapa <- ggmap(area_minard) +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, color = direction, size = survivors), lineend = "round") +
+  geom_point(data = cities, aes(x = long, y = lat), color = "#DC5B44") +  # loc. das cidades
+  geom_text_repel(data = cities, aes(x = long, y = lat, label = city), # nomes das cidades
+                  color = "red", size = 3, fontface = "bold") + 
+  scale_size(range = c(0.5, 15)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE, size = FALSE) + theme_nothing()
+
+mapa
+```
+
+## Zoom: Mapa da campanha russa
+```{r fig.align="center", echo=FALSE, message=FALSE, warning=FALSE}
+recorte_minard <- c(left = 23.5, bottom = 53.4, right = 38.1, top = 56.3)
+area_minard <- get_stadiamap(bbox = recorte_minard, zoom = 8, maptype = "stamen_toner_lite", where = "cache")
+
+mapa <- ggmap(area_minard) +
+  geom_path(data = troops, aes(x = long, y = lat, group = group, color = direction, size = survivors), lineend = "round") +
+  geom_point(data = cities, aes(x = long, y = lat), color = "#DC5B44") +  # loc. das cidades
+  geom_text_repel(data = cities, aes(x = long, y = lat, label = city), # nomes das cidades
+                  color = "red", size = 3, fontface = "bold") + 
+  scale_size(range = c(0.5, 15)) + 
+  scale_colour_manual(values = c("#e6ccac", "#252523")) +
+  labs(x = NULL, y = NULL) + 
+  guides(color = FALSE, size = FALSE) + theme_nothing()
+
+mapa
+```
+
+
+
+## Últimos ajustes
+```{r fig.align="center", fig.height=5, fig.show="hide", message=FALSE, warning=FALSE}
+# Juntar dados de ambos os gráficos
+ambos <- gtable_rbind(ggplotGrob(mapa), ggplotGrob(grafico_temperaturas))
+
+# Ajustando paineis
+paineis <- ambos$layout$t[grep("panel", ambos$layout$name)]
+map.panel.height <- ambos$heights[paineis][1]
+ambos$heights[paineis] <- unit(c(unlist(map.panel.height)[1], 0.1), "null")
+
+# Exibindo ambos os gráficos juntos
+grid::grid.newpage()
+grid::grid.draw(ambos)
+```
+
+## Combinando as duas partes!
+```{r echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+grid::grid.newpage()
+grid::grid.draw(ambos)
+```
+
+
+## Atividade
+
+Escolha uma camada do gráfico da campanha russa para alterar. Você pode mudar cores, apresentação, tema, etc.
