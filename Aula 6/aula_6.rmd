@@ -376,9 +376,10 @@ gapminder %>% ggplot(aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   # Código específico para a animação
-  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  labs(title = "GDP and Life Expectancy by Year", subtitle = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
   transition_time(year) +
   ease_aes('linear')
+
 ```
 
 ## Eixo X dinâmico
@@ -390,8 +391,7 @@ gapminder %>% ggplot(aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_x_log10() +
   # Código específico para a animação
   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
- transition_time(year) +
-  labs(title = "Year: {frame_time}") +
+  transition_time(year) +
   view_follow(fixed_y = TRUE)
 ```
 
@@ -404,8 +404,7 @@ gapminder %>% ggplot(aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_x_log10() +
   # Código específico para a animação
   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
- transition_time(year) +
-  labs(title = "Year: {frame_time}") +
+  transition_time(year) +
   view_follow(fixed_y = TRUE)
 ```
 
@@ -418,8 +417,7 @@ gapminder %>% ggplot(aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_x_log10() +
   # Código específico para a animação
   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
- transition_time(year) +
-  labs(title = "Year: {frame_time}") +
+  transition_time(year) +
   shadow_wake(wake_length = 0.2, alpha = FALSE)
 ```
 
@@ -432,8 +430,7 @@ gapminder %>% ggplot(aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_x_log10() +
   # Código específico para a animação
   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
- transition_time(year) +
-  labs(title = "Year: {frame_time}") +
+  transition_time(year) +
   shadow_wake(wake_length = 0.2, alpha = FALSE)
 ```
 
