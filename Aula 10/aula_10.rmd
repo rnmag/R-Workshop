@@ -1,0 +1,149 @@
+---
+title: "Storytelling"
+author: Rafael N. Magalhães
+date: "`r format(Sys.time(), '%d-%m-%Y')`"
+output: 
+  revealjs::revealjs_presentation:
+    theme: simple
+    highlight: tango
+    transition: slide
+    center: true
+    css: stylesheet.css
+    reveal_options:
+      controls: false  # Desativar botões de navegação no slide
+      mouseWheel: true # Passar slides com o mouse
+  beamer_presentation:
+    highlight: tango
+    keep_tex: false # Mudar se quiser ter o arquivo .tex
+    toc: true # Seções definidas como nível 1
+    incremental: false # Sem bullets incrementais. Para ativar específ., usar >-
+    slide_level: 2 # Slides definidos como nível 2
+---
+
+## Fluxo da ciência de dados
+Percorremos um longo caminho nessas duas semanas. Hoje completamos o ciclo.
+
+<center>
+![Fluxo](images/flow.png)
+</center>
+
+## A floresta e as árvores
+
+<center>
+![Floresta](images/floresta.jpg){width=400}
+</center>
+
+Exploramos muitos detalhes de implementação nesses últimos dias. Nos concentramos em aspectos individuais de cada análise.
+
+Hoje, queremos dar um passo atrás para pensarmos **menos no detalhe** e **mais no processo**.
+
+No fim da contas, toda análise de dados tem um propósito. Como alcançá-lo de maneira mais efetiva?
+
+## Elementos essesenciais da comunicação de dados
+
+Vamos separar o processo de comunicação de dados em 6 princípios gerais:
+
+1. O contexto importa
+2. A visualização deriva dos dados
+3. Separar o que é sinal e o que é ruído
+4. Impor hierarquia entre os dados
+5. Beleza também conta
+6. Sua análise deve contar uma história
+
+## Contando sua história
+
+## Amarrando todos os passos
+
+Vamos contar uma história partindo do gráfico abaixo, fazendo passo a passo as adaptações sobre as quais conversamos. O que ele está te dizendo?
+<center>
+![Escala](images/final-1.png){width=500px}
+</center>
+
+
+## Amarrando todos os passos
+
+<center>
+![Escala](images/final-2.png)
+</center>
+
+
+## Amarrando todos os passos
+
+<center>
+![Escala](images/final-3.png)
+</center>
+
+## Amarrando todos os passos
+<center>
+![Escala](images/final-4.png)
+</center>
+
+
+## Amarrando todos os passos
+<center>
+![Escala](images/final-5.png)
+</center>
+
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-1.png)
+</center>
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-2.png)
+</center>
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-3.png)
+</center>
+
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-4.png)
+</center>
+
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-5.png)
+</center>
+
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-6.png)
+</center>
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-7.png)
+</center>
+
+## Narrativa final
+
+<center>
+![Escala](images/hist-8.png)
+</center>
+
+## Antes e depois
+
+<center>
+![Escala](images/hist-9.png)
+</center>
+
+## Referência
+<center>
+[![storytelling](images/storytelling.jpg)](https://www.amazon.com/Storytelling-Data-Visualization-Business-Professionals-ebook/dp/B016DHQSM2)
+</center>
+
